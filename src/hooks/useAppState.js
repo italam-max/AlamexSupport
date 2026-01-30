@@ -60,6 +60,32 @@ export function useAppState() {
     return false;
   };
 
+  // --- CORRECCIÓN AQUI: BORRADO EN CASCADA MANUAL ---
+  const deleteItem = async (id) => {
+    // 1. Primero eliminamos el historial de mantenimiento de este equipo
+    // Esto evita el error 409 de Foreign Key Constraint
+    const { error: maintError } = await supabase.from('maintenance').delete().eq('item_id', id);
+    
+    if (maintError) {
+        console.error("Error eliminando historial asociado:", maintError);
+        // Si falla borrar el historial, detenemos para no dejar datos corruptos
+        return false;
+    }
+
+    // 2. Ahora sí, eliminamos el equipo del inventario
+    const { error } = await supabase.from('inventory').delete().eq('id', id);
+    
+    if (!error) {
+      // Actualizamos estado local: quitamos el item Y sus mantenimientos de la vista
+      setInventory(prev => prev.filter(item => item.id !== id));
+      setMaintenanceList(prev => prev.filter(m => m.item_id !== id));
+      return true;
+    }
+    
+    console.error("Error eliminando item:", error);
+    return false;
+  };
+
   // --- USUARIOS ---
   const addUser = async (newUser) => {
     const userToSave = {
@@ -126,7 +152,6 @@ export function useAppState() {
       type: newMaint.type,
       notes: newMaint.notes,
       status: targetStatus,
-      // NUEVO: Guardamos quién registró la acción
       registered_by: newMaint.registered_by ? newMaint.registered_by : null
     };
 
@@ -170,7 +195,7 @@ export function useAppState() {
   return {
     inventory, maintenanceList, users, 
     loading, 
-    addItem, updateItem, 
+    addItem, updateItem, deleteItem,
     addUser, updateUser, deleteUser,
     addMaintenance, completeMaintenance,
   };

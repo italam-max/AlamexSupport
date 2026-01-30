@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Loader2, Bell, UserCircle, LogOut } from 'lucide-react';
+// IMPORTAMOS SONNER PARA LAS NOTIFICACIONES
+import { Toaster } from 'sonner';
+
 // @ts-ignore
 import { useAppState } from './hooks/useAppState';
 // @ts-ignore
@@ -38,7 +41,7 @@ export default function App() {
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
 
-  // ESTADO PARA EL MENÚ DE USUARIO (Solución al botón que desaparece)
+  // ESTADO PARA EL MENÚ DE USUARIO
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   // LOGICA DE NEGOCIO (Custom Hook)
@@ -49,6 +52,7 @@ export default function App() {
     loading,
     addItem,
     updateItem,
+    deleteItem, // <--- IMPORTANTE: Asegúrate de que esto venga de tu useAppState
     addUser, 
     updateUser, 
     deleteUser,
@@ -99,6 +103,9 @@ export default function App() {
   return (
     <div className="flex h-screen bg-tech-50 font-sans text-tech-800 selection:bg-neon-400 selection:text-black">
       
+      {/* COMPONENTE DE NOTIFICACIONES GLOBAL */}
+      <Toaster position="top-center" richColors expand={true} /> 
+
       {/* Navegación */}
       {/* @ts-ignore */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -190,7 +197,15 @@ export default function App() {
           
           {/* @ts-ignore */}
           {activeTab === 'inventory' && (
-            <InventoryView inventory={inventory} maintenanceList={maintenanceList} users={users} addMaintenance={addMaintenance} updateItem={updateItem} onAddClick={() => setShowAddModal(true)} />
+            <InventoryView 
+               inventory={inventory} 
+               maintenanceList={maintenanceList} 
+               users={users} 
+               addMaintenance={addMaintenance} 
+               updateItem={updateItem} 
+               deleteItem={deleteItem} // <--- PASAMOS LA FUNCION DELETE AQUI
+               onAddClick={() => setShowAddModal(true)} 
+            />
           )}
 
           {/* @ts-ignore */}
