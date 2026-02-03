@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Plus, Wrench, Trash2, Printer, Smartphone, Monitor, Wifi, MousePointer2, Battery, Package, Search, Filter, User } from 'lucide-react';
-import { toast } from 'sonner'; // <--- IMPORTAMOS SONNER
+import { toast } from 'sonner';
 import EquipmentDetailModal from '../components/Modals/EquipmentDetailModal';
-import ConfirmModal from '../components/Modals/ConfirmModal'; // <--- IMPORTAMOS EL MODAL NUEVO
+import ConfirmModal from '../components/Modals/ConfirmModal';
 
 const getIcon = (category) => {
-  // ... (tu funcion getIcon sigue igual)
   const iconProps = { size: 16, strokeWidth: 2 };
   switch (category) {
     case 'Impresoras': return <Printer {...iconProps} />;
@@ -20,12 +19,11 @@ const getIcon = (category) => {
 
 export const InventoryView = ({ inventory, maintenanceList = [], users = [], onAddClick, addMaintenance, updateItem, deleteItem }) => {
   const [selectedItem, setSelectedItem] = useState(null);
-
-  // ESTADOS PARA LA ELIMINACION "PREMIUM"
-  const [itemToDelete, setItemToDelete] = useState(null); // Guarda el objeto o ID a borrar
+  
+  // ESTADOS PARA LA ELIMINACION DESDE LA LISTA
+  const [itemToDelete, setItemToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // FUNCION PARA EJECUTAR EL BORRADO REAL
   const handleConfirmDelete = async () => {
     if (itemToDelete) {
        const success = await deleteItem(itemToDelete.id);
@@ -41,7 +39,6 @@ export const InventoryView = ({ inventory, maintenanceList = [], users = [], onA
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
-      {/* ... (Header y botones superiores siguen IGUAL) ... */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <h2 className="text-3xl font-black text-tech-900 tracking-tighter uppercase">Inventario</h2>
@@ -95,14 +92,12 @@ export const InventoryView = ({ inventory, maintenanceList = [], users = [], onA
                       </div>
                     </div>
                   </td>
-                  {/* ... (resto de las celdas IGUAL) ... */}
                   <td className="py-4 px-6">
                     <div className="inline-flex items-center gap-2 px-2 py-1 rounded-lg border border-transparent group-hover:border-slate-200 transition-colors">
                       <span className="text-slate-400 group-hover:text-tech-900 transition-colors">{getIcon(item.category)}</span>
                       <span className="text-sm font-medium text-slate-600">{item.category}</span>
                     </div>
                   </td>
-                  
                   <td className="py-4 px-6">
                      {item.assigned_to ? (
                         <div className="flex items-center gap-2">
@@ -117,7 +112,6 @@ export const InventoryView = ({ inventory, maintenanceList = [], users = [], onA
                         <p className="text-sm text-slate-500 font-medium flex items-center gap-1">{item.location || 'Sin asignar'}</p>
                      )}
                   </td>
-
                   <td className="py-4 px-6">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                         item.status === 'Activo' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
@@ -137,20 +131,18 @@ export const InventoryView = ({ inventory, maintenanceList = [], users = [], onA
                       {item.last_maintenance || item.lastMaintenance || '--/--/----'}
                     </p>
                   </td>
-
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">
                       <button className="p-2 rounded-lg text-slate-400 hover:text-neon-400 hover:bg-tech-900 transition-all" onClick={(e) => { e.stopPropagation(); }}>
                         <Wrench size={16} />
                       </button>
                       
-                      {/* --- AQUI USAMOS EL NUEVO ESTADO PARA ELIMINAR --- */}
                       <button 
                          className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all" 
                          onClick={(e) => { 
                            e.stopPropagation();
-                           setItemToDelete(item); // 1. Seleccionamos el item
-                           setIsDeleteModalOpen(true); // 2. Abrimos el modal
+                           setItemToDelete(item);
+                           setIsDeleteModalOpen(true);
                          }}
                       >
                         <Trash2 size={16} />
@@ -162,7 +154,7 @@ export const InventoryView = ({ inventory, maintenanceList = [], users = [], onA
               ))}
             </tbody>
           </table>
-           {/* ... (Estado vacío sigue IGUAL) ... */}
+          
           {inventory.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16">
               <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
@@ -184,11 +176,11 @@ export const InventoryView = ({ inventory, maintenanceList = [], users = [], onA
           users={users} 
           onAddLog={addMaintenance}
           onUpdate={updateItem}
+          onDelete={deleteItem} // <--- 1. AQUI PASAMOS LA FUNCION
           onClose={() => setSelectedItem(null)} 
         />
       )}
 
-      {/* --- RENDERIZAMOS EL MODAL DE CONFIRMACION AQUI --- */}
       <ConfirmModal 
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
