@@ -1,5 +1,6 @@
 import React from 'react';
-import { LayoutDashboard, Package, Wrench, BarChart3, Hexagon, Users } from 'lucide-react';
+// AGREGAMOS EL ICONO 'Monitor' A LA IMPORTACIÓN
+import { LayoutDashboard, Package, Wrench, BarChart3, Hexagon, Users, Monitor } from 'lucide-react';
 
 export default function Sidebar({ activeTab, setActiveTab }) {
   const getButtonClass = (tabName) =>
@@ -39,11 +40,17 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           {activeTab === 'inventory' && <div className="absolute right-0 top-0 h-full w-1 bg-neon-400 shadow-neon"></div>}
         </button>
         
-        {/* NUEVO BOTÓN: USUARIOS */}
         <button onClick={() => setActiveTab('users')} className={getButtonClass('users')}>
           <Users size={20} /> 
           <span>COLABORADORES</span>
           {activeTab === 'users' && <div className="absolute right-0 top-0 h-full w-1 bg-neon-400 shadow-neon"></div>}
+        </button>
+
+        {/* --- NUEVO BOTÓN: SOFTWARE --- */}
+        <button onClick={() => setActiveTab('software')} className={getButtonClass('software')}>
+          <Monitor size={20} /> 
+          <span>SOFTWARE</span>
+          {activeTab === 'software' && <div className="absolute right-0 top-0 h-full w-1 bg-neon-400 shadow-neon"></div>}
         </button>
 
         <button onClick={() => setActiveTab('maintenance')} className={getButtonClass('maintenance')}>
